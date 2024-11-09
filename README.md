@@ -1,8 +1,8 @@
-# **`@street-devs/nest-snowflake-id` - User Guide**
+# **`@street-devs/snowflake-id` - User Guide**
 
 ## Overview
 
-The **`@street-devs/nest-snowflake-id`** package provides a highly customizable Snowflake ID generator for NestJS applications. This generator produces unique 64-bit IDs based on the Snowflake algorithm, which consists of a timestamp, a node (instance) ID, and a sequence number. It also includes decoding capabilities to extract the components of generated IDs.
+The **`@street-devs/snowflake-id`** package provides a highly customizable Snowflake ID generator for NestJS applications. This generator produces unique 64-bit IDs based on the Snowflake algorithm, which consists of a timestamp, a node (instance) ID, and a sequence number. It also includes decoding capabilities to extract the components of generated IDs.
 
 ### Key Features:
 - **Customizable epoch**: You can specify a custom start epoch for the ID generation.
@@ -13,10 +13,10 @@ The **`@street-devs/nest-snowflake-id`** package provides a highly customizable 
 
 ## Installation
 
-To install the package in your NestJS project, run:
+To install the package in your project, run:
 
 ```bash
-npm install --save @street-devs/nest-snowflake-id
+npm install --save @street-devs/snowflake-id
 ```
 
 ---
@@ -25,90 +25,17 @@ npm install --save @street-devs/nest-snowflake-id
 
 ### 1. Importing and Configuring the Module
 
-To use **`@street-devs/nest-snowflake-id`** in your NestJS application, you need to import the module and configure it.
-
-#### Example: Basic Usage
-
-```typescript
-import { Module } from '@nestjs/common';
-import { SnowflakeIdModule } from '@street-devs/nest-snowflake-id';
-
-@Module({
-  imports: [SnowflakeIdModule.forRoot()],
-})
-export class AppModule {}
-```
-
-#### Example: Custom Configuration
-
-You can provide custom options:
-
-```typescript
-import { Module } from '@nestjs/common';
-import { SnowflakeIdModule } from '@street-devs/nest-snowflake-id';
-
-import { Module } from '@nestjs/common';
-import { SnowflakeIdModule } from 'nest-snowflake-id';
-
-@Module({
-  imports: [SnowflakeIdModule.forRoot({
-    customEpoch: 1609459200000, // Custom epoch (Jan 1, 2021)
-    dataCenterId: 1, // Data Center ID
-    workerId: 1, // Worker ID
-  })],
-})
-export class AppModule {}
-```
+To use **`@street-devs/snowflake-id`** in your application, you need to import the module and configure it.
 
 - `customEpoch` is an optional UNIX timestamp that marks the start of your Snowflake IDs. If not provided, the current time is used.
 - `dataCenterId` allows you to set a unique data center ID, which should be between 0 and 31 (based on 5-bit configuration).
 - `workerId`: allows you to set a unique worker ID, which should be between 0 and 31 (based on 5-bit configuration).
 
 ### 2. Generating IDs
-
-You can generate Snowflake IDs by injecting the **`SnowflakeIdService`** into your service or controller.
-
-#### Example: ID Generation
-
-```typescript
-import { Injectable } from '@nestjs/common';
-import { SnowflakeIdService } from '@street-devs/nest-snowflake-id';
-
-@Injectable()
-export class MyService {
-  constructor(private readonly snowflakeIdService: SnowflakeIdService) {}
-
-  generateId() {
-    const id = this.snowflakeIdService.generate();
-    console.log(`Generated Snowflake ID: ${id}`);
-    return id;
-  }
-}
-```
-
 The `generate()` method will return a unique **64-bit Snowflake ID** as a `bigint`.
 
 ### 3. Decoding IDs
-
 You can also decode a Snowflake ID to extract its timestamp, instance ID, and sequence number.
-
-#### Example: ID Decoding
-
-```typescript
-import { Injectable } from '@nestjs/common';
-import { SnowflakeIdService } from '@street-devs/nest-snowflake-id';
-
-@Injectable()
-export class MyService {
-  constructor(private readonly snowflakeIdService: SnowflakeIdService) {}
-
-  decodeId(id: bigint) {
-    const decoded = this.snowflakeIdService.decode(id);
-    console.log(`Decoded Snowflake ID:`, decoded);
-    return decoded;
-  }
-}
-```
 
 The `decode()` method will return an object containing:
 - `dateTime`: The exact date and time when the ID was generated.
@@ -117,18 +44,6 @@ The `decode()` method will return an object containing:
 - `workerId`: The ID of the worker node.
 - `sequence`: The sequence number ensuring uniqueness within the same millisecond.
 - `epoch`: The custom epoch used.
-
-
-### 4. Global Module Usage
-
-If you want to make the **`SnowflakeIdService`** globally available throughout your application, set the `global` option to `true`:
-
-```typescript
-@Module({
-  imports: [SnowflakeIdModule.forRoot({ global: true })],
-})
-export class AppModule {}
-```
 
 ---
 
