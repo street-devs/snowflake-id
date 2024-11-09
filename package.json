@@ -1,0 +1,46 @@
+{
+  "name": "@street-devs/snowflake-id",
+  "version": "1.0.0",
+  "description": "Provides a highly customizable Snowflake ID generator for Javascript/Typescript applications. This generator produces unique 64-bit IDs based on the Snowflake algorithm, which consists of a timestamp, a node (instance) ID, and a sequence number. It also includes decoding capabilities to extract the components of generated IDs.",
+  "author": "duysolo <duypt.dev@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/street-devs/snowflake-id.git"
+  },
+  "keywords": [
+    "street-devs",
+    "snowflake id",
+    "vanillajs snowflake id"
+  ],
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "private": false,
+  "license": "MIT",
+  "scripts": {
+    "prebuild": "rimraf lib",
+    "dev": "npm run prebuild && tsc --build tsconfig.json",
+    "build": "npm run prebuild && tsc --build tsconfig.build.json",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"{src,test}/**/*.ts\" --fix",
+    "increase-version": "node scripts/increase-version.js"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.5.0",
+    "@typescript-eslint/parser": "^8.5.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^3.6.3",
+    "eslint-plugin-import": "^2.30.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.3.3",
+    "eslint": "^8.48.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  },
+  "bugs": {
+    "url": "https://github.com/street-devs/snowflake-id/issues"
+  },
+  "homepage": "https://github.com/street-devs/snowflake-id#readme",
+  "directories": {
+    "test": "test"
+  }
+}
