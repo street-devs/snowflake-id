@@ -1,105 +1,89 @@
-# **`@street-devs/snowflake-id` - User Guide**
+
+# `@street-devs/snowflake-id` User Guide
 
 ## Overview
 
-The **`@street-devs/snowflake-id`** package provides a highly customizable Snowflake ID generator for NestJS applications. This generator produces unique 64-bit IDs based on the Snowflake algorithm, which consists of a timestamp, a node (instance) ID, and a sequence number. It also includes decoding capabilities to extract the components of generated IDs.
-
-### Key Features:
-- **Customizable epoch**: You can specify a custom start epoch for the ID generation.
-- **Worker and Data Center IDs**: Each instance of the generator can have its own node ID, ensuring that generated IDs are unique across across multiple machines and data centers.
-- **Concurrency-safe**: Handles sequence numbers within the same millisecond to avoid collisions.
-
----
+The `@street-devs/snowflake-id` package provides a class for generating unique 64-bit IDs using the Snowflake algorithm. 
+It supports customizable options for epoch, machine ID, and worker ID, making each ID unique across distributed systems. 
+Each generated ID consists of a timestamp, data center ID, worker ID, and sequence number.
 
 ## Installation
 
-To install the package in your project, run:
+Install the package via npm:
 
-```bash
-npm install --save @street-devs/snowflake-id
-```
-
----
+```npm install @street-devs/snowflake-id```
 
 ## Usage
 
-### 1. Importing and Configuring the Module
+### 1. Import and Configure
 
-To use **`@street-devs/snowflake-id`** in your application, you need to import the module and configure it.
+```import { SnowflakeId, SnowflakeIdOptions } from '@street-devs/snowflake-id';```
 
-- `customEpoch` is an optional UNIX timestamp that marks the start of your Snowflake IDs. If not provided, the current time is used.
-- `dataCenterId` allows you to set a unique data center ID, which should be between 0 and 31 (based on 5-bit configuration).
-- `workerId`: allows you to set a unique worker ID, which should be between 0 and 31 (based on 5-bit configuration).
+### 2. Initialize SnowflakeId
 
-### 2. Generating IDs
-The `generate()` method will return a unique **64-bit Snowflake ID** as a `bigint`.
+The `SnowflakeId` class accepts an optional SnowflakeIdOptions configuration object to specify epoch, machine ID, and worker ID.
+```
+const options: SnowflakeIdOptions = {
+  customEpoch: Date.now(),  // Optional, defaults to 2024-01-01T00:00:00Z
+  machineId: 1,             // Optional, unique identifier for the machine
+  workerId: 2               // Optional, unique identifier for the worker
+};
+const snowflakeId = new SnowflakeId(options);
+```
 
-### 3. Decoding IDs
-You can also decode a Snowflake ID to extract its timestamp, instance ID, and sequence number.
+### 3. Generate an ID
 
-The `decode()` method will return an object containing:
-- `dateTime`: The exact date and time when the ID was generated.
-- `timestamp`: Raw timestamp value.
-- `dataCenterId`: The ID of the data center.
-- `workerId`: The ID of the worker node.
-- `sequence`: The sequence number ensuring uniqueness within the same millisecond.
-- `epoch`: The custom epoch used.
+Use the `generate()` method to create a unique Snowflake ID.
+```
+const id = snowflakeId.generate();
+console.log(id.toString());  // Example output: '1234567890123456789'
+```
 
----
+### 4. Decode an ID
 
-## API Reference
-
-### SnowflakeIdService Methods
-
-1. **`generate()`**: Generates a unique 64-bit Snowflake ID.
-    - Returns: `bigint`
-
-2. **`decode(id: bigint)`**: Decodes the given Snowflake ID.
-    - Parameters:
-      - `id`: The Snowflake ID to decode.
-    - Returns: `{ dateTime: Date, timestamp: bigint, dataCenterId: bigint, workerId: bigint, sequence: bigint, epoch: number }`
-
----
-
-
-## Technical Details
-
-### ID Structure (64 bits):
-
-- **Epoch (42 bits)**: Used to store the timestamp (up to 139 years).
-- **Worker ID (5 bits)**: Identifies the node generating the ID (supports up to 32 workers).
-- **Data Center ID (5 bits)**: Identifies the data center (supports up to 32 data centers).
-- **Sequence (12 bits)**: Ensures uniqueness within the same millisecond (can generate up to 4096 IDs per millisecond).
-
-### Edge Cases:
-- When multiple IDs are generated within the same millisecond, the sequence number will increment. If the sequence number reaches the limit (1023), the generator waits for the next millisecond.
-
----
-
-## Example Use Case
-
-```typescript
-const snowflake = new SnowflakeId({ 
-  customEpoch: 1609459200000, 
-  dataCenterId: 1, 
-  workerId: 1 
-});
-const newId = snowflake.generate();
-console.log(newId);  // Example output: 93977444276639021
-const decoded = snowflake.decode(newId);
-console.log(decoded); 
+The `decode(id)` method extracts the components of a Snowflake ID, providing details on when and where the ID was generated.
+```
+const decoded = snowflakeId.decode(id);
+console.log(decoded);
+// Output:
 // {
-//   "dateTime": "2024-09-16T07:52:48.732Z",
-//   "timestamp": 1726473168732,
-//   "dataCenterId": 1,
-//   "workerId": 1,
-//   "sequence": 1325,
-//   "epoch": 1704067200000
+//   dateTime: Date object,
+//   timestamp: bigint,
+//   dataCenterId: bigint,
+//   workerId: bigint,
+//   sequence: bigint,
+//   epoch: number
 // }
 ```
 
----
+## API Reference
 
-## License
+### `SnowflakeId` Class
 
-This package is open-sourced under the MIT License.
+#### Constructor: `new SnowflakeId(options?: SnowflakeIdOptions)`
+- `options.customEpoch` - Custom epoch time in milliseconds (default: 2024-01-01T00:00:00Z).- 
+- `options.machineId` - Machine ID for uniqueness across machines (default: random).- 
+- `options.workerId` - Worker ID for uniqueness across workers (default: random).
+
+#### Methods
+- `generate(): bigint` - Generates a unique Snowflake ID as a 64-bit bigint.
+- `decode(id: bigint): SnowflakeIdDecoded` - Decodes a given Snowflake ID, returning:
+- `dateTime: Date` instance based on the timestamp.
+- `timestamp: Timestamp` component of the ID.
+- `dataCenterId`: Data center ID.
+- `workerId`: Worker ID.
+- `sequence`: Sequence number to prevent collisions within the same millisecond.
+- `epoch`: Custom epoch used for the timestamp.
+
+## Examples
+```
+const id = snowflakeId.generate();
+console.log(`Generated ID: ${id}`);
+
+const decodedId = snowflakeId.decode(id);
+console.log(`Decoded components: `, decodedId);
+```
+
+## Additional Notes
+- JSON Serialization: Includes a custom BigInt.toJSON() method that converts BigInt values to numbers for JSON compatibility.
+- Bit Structure: Uses a fixed 64-bit Snowflake ID structure, allocating 42 bits for the timestamp, 5 bits for data center ID, 5 bits for worker ID, and 12 bits for the sequence.
