@@ -135,7 +135,7 @@ export class SnowflakeId {
     const sequence = id & this.MAX_SEQUENCE
 
     return {
-      dateTime: new Date(Number(timestamp)),
+      dateTime: new Date(timestamp.toString()),
       timestamp,
       dataCenterId: dataCenterId,
       workerId: workerId,
