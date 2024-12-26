@@ -156,7 +156,7 @@ export class SnowflakeId {
 
     this._sequence = (this._sequence + 1n) & this.MAX_SEQUENCE
 
-    if (this._sequence >= this.MAX_SEQUENCE) {
+    if (this._sequence > this.MAX_SEQUENCE) {
       this._sequence = 0n
     }
 
