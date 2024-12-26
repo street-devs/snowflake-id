@@ -106,12 +106,21 @@ export class SnowflakeId {
       timestampLeftShift - this.DATA_CENTER_ID_BITS - this.WORKER_ID_BITS
     const workerIdLeftShift = dataCenterIdLeftShift - this.SEQUENCE_BITS
 
-    return (
+    const id =
       (currentTimestamp << timestampLeftShift) |
       (this._dataCenterId << dataCenterIdLeftShift) |
       (this._workerId << workerIdLeftShift) |
       this._sequence
-    )
+
+    console.log('sequence', {
+      sequence: this._sequence,
+      lastTimestamp: this._lastTimestamp,
+      currentTimestamp: currentTimestamp,
+      customEpoch: this._customEpoch,
+      id: id,
+    })
+
+    return id
   }
 
   /**
@@ -145,13 +154,19 @@ export class SnowflakeId {
   }
 
   protected makeSequence(currentTimestamp: bigint) {
+    this._lastTimestamp = currentTimestamp
+
     if (currentTimestamp !== this._lastTimestamp) {
       this._sequence = 0n
 
       return this._sequence
     }
 
-    this._sequence = (this._sequence + 1n) & this.MAX_SEQUENCE
+    if (this._sequence >= this.MAX_SEQUENCE) {
+      this._sequence = 0n
+    } else {
+      this._sequence = (this._sequence + 1n) & this.MAX_SEQUENCE
+    }
 
     // Sequence overflow, wait until next millisecond
     if (this._sequence === 0n) {
