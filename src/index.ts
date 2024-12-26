@@ -112,14 +112,6 @@ export class SnowflakeId {
       (this._workerId << workerIdLeftShift) |
       this._sequence
 
-    console.log('sequence', {
-      sequence: this._sequence,
-      lastTimestamp: this._lastTimestamp,
-      currentTimestamp: currentTimestamp,
-      customEpoch: this._customEpoch,
-      id: id,
-    })
-
     return id
   }
 
