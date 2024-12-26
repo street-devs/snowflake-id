@@ -154,10 +154,10 @@ export class SnowflakeId {
       return this._sequence
     }
 
+    this._sequence = (this._sequence + 1n) & this.MAX_SEQUENCE
+
     if (this._sequence >= this.MAX_SEQUENCE) {
       this._sequence = 0n
-    } else {
-      this._sequence = (this._sequence + 1n) & this.MAX_SEQUENCE
     }
 
     // Sequence overflow, wait until next millisecond
